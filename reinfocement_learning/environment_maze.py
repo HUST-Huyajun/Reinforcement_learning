@@ -1,7 +1,6 @@
 
 import numpy as np
 import sys
-import time
 import random
 if sys.version_info.major==2:
     import Tkinter as tk
@@ -13,6 +12,7 @@ length=5
 width=4
 hell=np.array([[3,1],[2,2]])
 apple=np.array([[3,2]])
+time_interval=200#ms
 
 class env_maz(tk.Tk):
     def __init__(self, screenName = None, baseName = None, className = 'Tk', useTk = 1, sync = 0, use = None):
@@ -68,9 +68,8 @@ class env_maz(tk.Tk):
 
 if __name__=='__main__':
     a=env_maz()
-    #a.mainloop()
     for i in range(100):
-        a.after(500,a.move(a.action[random.randint(0,3)]))
+        a.after(time_interval,a.move(a.action[random.randint(0,3)]))
     #a.after(500,a.move('down'))
     #a.after(500,a.move('left'))
-    a.mainloop()
+    #a.mainloop()
