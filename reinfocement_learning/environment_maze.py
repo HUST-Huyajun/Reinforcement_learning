@@ -9,23 +9,29 @@ else:
     import tkinter as tk
 #迷宫大小参数
 pixel=60
-length=7
-width=7
+length=4
+width=5
 #美观参数
 searcher_beauty_bias=10
 #环境设置参数
-hell=np.array([[3,1],[2,2],[5,4],[5,7],[7,3],[4,6]])#x为从左到右第几个，y为从上到下第几个
-apple=np.array([[3,2]])
+hell=np.array([[2,1],[3,1],[4,2],[2,3],[2,4],[2,5],[3,4]])#x为从左到右第几个，y为从上到下第几个
+apple=np.array([[3,5]])
 #动作延时参数
-time_interval=200#ms
+time_interval=0#ms,每移动一次延时
+terminal_interval=0#ms，每次抽样延时
 #奖赏设置
-reward_dict={'hell':-1,'apple':1,'nothing':0}
-
+reward_dict={'hell':-1,'apple':1,'normal':0}
+#terminal设置
+terminal_place={'hell':True,'apple':True,'normal':False}
+class ActionError(ValueError):
+    def __init__(self,message):
+        ValueError.__init__(self)
+        self.message=message
 class env_maz(tk.Tk):
     def __init__(self, screenName = None, baseName = None, className = 'Tk', useTk = 1, sync = 0, use = None):
         super().__init__(screenName, baseName, className, useTk, sync, use)
-        self.action=['up','down','left','right']
-        self.n_action=len(self.action)
+        self.actions=['up','down','left','right']
+        self.n_action=len(self.actions)
         self.title('Find apple')
         self.max_length=length*pixel
         self.max_width=width*pixel
@@ -60,12 +66,14 @@ class env_maz(tk.Tk):
         self.canvas.pack()
     def reset(self):
         self.update()
-        time.sleep(1)
+        time.sleep(terminal_interval/1000)
         self.canvas.delete(self.searcher)
         x1,y1,x2,y2=0,0,pixel,pixel
         _b=searcher_beauty_bias
         self.searcher=self.canvas.create_oval(x1+_b,y1+_b,x2-_b,y2-_b,fill='yellow')
         self.update()
+        s0=(1,1)
+        return s0#初始状态
         
     def is_move_legal(self,action):
         deltax=0
@@ -78,20 +86,31 @@ class env_maz(tk.Tk):
             deltax=-pixel
         elif action=='right':
             deltax=+pixel
-        else:
-            print("no this move!\n")
-            self.action_text.set('no->'+action+'<-action!')
-            return
-        x=self.canvas.coords(self.searcher)[0]+deltax
-        y=self.canvas.coords(self.searcher)[1]+deltay
+        if action not in self.actions:
+            return False
+            
+        x=self.canvas.coords(self.searcher)[0]+deltax-searcher_beauty_bias
+        y=self.canvas.coords(self.searcher)[1]+deltay-searcher_beauty_bias
         if (x>=0)&(x<=self.max_length-pixel)&(y>=0)&(y<=self.max_width-pixel):
             return True
         else:
             return False
+    
+    def judge_state(self,s1): #判断状态在哪
+        s1=list(s1)
+        for coord in hell:
+            if (s1==coord).all():
+                return 'hell'#到地狱了
+        for coord in apple:
+            if (s1==coord).all():
+                return 'apple'#找到苹果了
+        return 'normal'
+       
 
-    def move(self,action):
+
+    def do_move(self,s0,action):#叫状态转移更好
         time.sleep(time_interval/1000)
-
+        s0=list(s0)
         deltax=0
         deltay=0
         if action=='up':
@@ -107,55 +126,47 @@ class env_maz(tk.Tk):
             deltax=+pixel
             self.action_text.set('right')
         else:
-            print("no this move!\n")
-            self.action_text.set('no->'+action+'<-action!')
-            raise RuntimeError('no this move!')
-            return -1
+            raise ActionError('No this action!')
         x=self.canvas.coords(self.searcher)[0]+deltax-searcher_beauty_bias
         y=self.canvas.coords(self.searcher)[1]+deltay-searcher_beauty_bias
         #print("search",self.canvas.coords(self.searcher),'\n')
         if (x>=0)&(x<=self.max_length-pixel)&(y>=0)&(y<=self.max_width-pixel):
             self.canvas.move(self.searcher,deltax,deltay)
             self.update()
-            for coord in hell:
-                if ([x/pixel+1,y/pixel+1]==coord).all():
-                    print("get to hell\n")
-                    self.state_text.set('get to hell')
-                    done=True
-                    s=coord
-                    return done,s,reward_dict['hell']#到地狱了
-            for coord in apple:
-                if ([x/pixel+1,y/pixel+1]==coord).all():
-                    print("find the apple\n")
-                    self.state_text.set('find the apple')
-                    done=True
-                    s=coord
-                    return done,s,reward_dict['apple']#找到苹果了
-            self.state_text.set('')
-            done=False
-            s=coord
-            return done,s,reward_dict['nothing']
+            s1=[x/pixel+1,y/pixel+1]#
+            where=self.judge_state(s1)
+
+            if where=='hell':
+                self.state_text.set('get to hell')
+            elif where=='apple':
+                self.state_text.set('find the apple')
+            elif where=='normal':
+                self.state_text.set('')
+            else:
+                raise ValueError('not define->'+where+'<-this place')
+
+            done=terminal_place[where]
+            reward=reward_dict[where]
+            return done,tuple(s1),reward#在普通板块
         else:
-            print("This action will move out of the boundary!\n")
-            self.state_text.set('This action will move out of the boundary!')
-            raise RuntimeError('testError_This action will move out of the boundary!')
-            return -1
+            raise ActionError('This action will move out of the boundary!')
 
 
 if __name__=='__main__':
     a=env_maz()
-    for i in range(100):
-        a.reset()
+    for i in range(10):
+        s0=a.reset()
         done=False
+        s=s0
         while True:
-            action=a.action[random.randint(0,3)]
+            action=a.actions[random.randint(0,3)]
             #action='down'
             if(a.is_move_legal(action)):
                 
-                done,s,reward=a.move(action)
+                done,s1,reward=a.do_move(s,action)
+                s=s1
+                print(s,reward,'\n')
                 if done:
                     break
-        
-    #a.after(500,a.move('down'))
-    #a.after(500,a.move('left'))
-    #a.mainloop()
+    a.mainloop()
+    
