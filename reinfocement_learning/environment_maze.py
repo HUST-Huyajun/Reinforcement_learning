@@ -10,7 +10,7 @@ else:
 #迷宫大小参数
 pixel=60
 length=4
-width=5
+width=6
 #美观参数
 searcher_beauty_bias=10
 #环境设置参数
@@ -20,7 +20,7 @@ apple=np.array([[3,5]])
 time_interval=0#ms,每移动一次延时
 terminal_interval=0#ms，每次抽样延时
 #奖赏设置
-reward_dict={'hell':-1,'apple':1,'normal':0}
+reward_dict={'hell':-1,'apple':100,'normal':0}
 #terminal设置
 terminal_place={'hell':True,'apple':True,'normal':False}
 class ActionError(ValueError):
@@ -95,8 +95,7 @@ class env_maz(tk.Tk):
             return True
         else:
             return False
-    
-    def judge_state(self,s1): #判断状态在哪
+    def where_state(self,s1): #判断状态在哪
         s1=list(s1)
         for coord in hell:
             if (s1==coord).all():
@@ -105,8 +104,9 @@ class env_maz(tk.Tk):
             if (s1==coord).all():
                 return 'apple'#找到苹果了
         return 'normal'
-       
-
+    def Whether_to_end(self,s1): #判断是否为terminal
+        done=terminal_place[self.where_state(s1)]
+        return done
 
     def do_move(self,s0,action):#叫状态转移更好
         time.sleep(time_interval/1000)
@@ -126,6 +126,7 @@ class env_maz(tk.Tk):
             deltax=+pixel
             self.action_text.set('right')
         else:
+            print(action)
             raise ActionError('No this action!')
         x=self.canvas.coords(self.searcher)[0]+deltax-searcher_beauty_bias
         y=self.canvas.coords(self.searcher)[1]+deltay-searcher_beauty_bias
@@ -134,7 +135,7 @@ class env_maz(tk.Tk):
             self.canvas.move(self.searcher,deltax,deltay)
             self.update()
             s1=[x/pixel+1,y/pixel+1]#
-            where=self.judge_state(s1)
+            where=self.where_state(s1)
 
             if where=='hell':
                 self.state_text.set('get to hell')
@@ -144,10 +145,8 @@ class env_maz(tk.Tk):
                 self.state_text.set('')
             else:
                 raise ValueError('not define->'+where+'<-this place')
-
-            done=terminal_place[where]
             reward=reward_dict[where]
-            return done,tuple(s1),reward#在普通板块
+            return tuple(s1),reward#在普通板块
         else:
             raise ActionError('This action will move out of the boundary!')
 
@@ -163,10 +162,9 @@ if __name__=='__main__':
             #action='down'
             if(a.is_move_legal(action)):
                 
-                done,s1,reward=a.do_move(s,action)
+                s1,reward=a.do_move(s,action)
                 s=s1
-                print(s,reward,'\n')
-                if done:
+                if a.Whether_to_end(s):
                     break
     a.mainloop()
     
