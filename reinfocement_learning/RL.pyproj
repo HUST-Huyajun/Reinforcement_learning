@@ -26,6 +26,9 @@
     <Compile Include="Environment_Maze.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="MenteCarlo_algorithm.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Q_learning_algorithm.py">
       <SubType>Code</SubType>
     </Compile>
