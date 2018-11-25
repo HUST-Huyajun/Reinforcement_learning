@@ -12,6 +12,12 @@ class State_Action_table:
         s=tuple(s)
         if s not in self.__table.index:
             self.__table=self.__table.append(other=pd.Series(data=[0]*self.n_actions,index=self.__table.columns,name=s))
+    
+    def count_s_a(self,state,action):
+        self.check_state(state)
+        self.__table.loc[[state],[action]]=self.__table.loc[[state],[action]]+1
+
+
     def choose_best_action(self,s0):
         self.check_state(s0)
         action_group=self.__table.loc[[s0],:]#tuple不加[]会出现错误，解释器无法识别是元组是统一一个参数还是多个参数
