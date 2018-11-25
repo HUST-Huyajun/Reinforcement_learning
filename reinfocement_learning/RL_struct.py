@@ -7,13 +7,13 @@ class RL_struct():
     def __init__(self,epsilon_greedy=0.9,reward_delay=0.9,learning_rate=0.5,train_times=10):
         self.epsilon=epsilon_greedy
         self.gamma=reward_delay
-        self.alpha=learning_rate
+        self.alpha=learning_rate#只对Sarsa 和Q-learning有意义
         self.n=train_times
         self.Env=Environment_Maze.env_maz()
         self.actions=self.Env.actions
         self.Q_table=Table.State_Action_table(self.actions)
 
-    def epsilon_choose_action(self,s0):
+    def epsilon_choose_action(self,s0):#epsilon-greedy
         if self.Env.Whether_to_end(s0):
             return 'None'
         self.Q_table.check_state(s0)
