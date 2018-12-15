@@ -1,4 +1,3 @@
-
 import numpy as np
 import sys
 import random
@@ -7,22 +6,74 @@ if sys.version_info.major==2:
     import Tkinter as tk
 else:
     import tkinter as tk
+
 #迷宫大小参数
-pixel=60
-length=4
-width=6
+pixel=30
+length=7
+width=7
 #美观参数
-searcher_beauty_bias=10
-#环境设置参数
-hell=np.array([[2,1],[3,1],[4,2],[2,3],[2,4],[2,5],[3,4]])#x为从左到右第几个，y为从上到下第几个
-apple=np.array([[3,5]])
+searcher_beauty_bias=5
 #动作延时参数
 time_interval=0#ms,每移动一次延时
 terminal_interval=0#ms，每次抽样延时
 #奖赏设置
-reward_dict={'hell':-1,'apple':100,'normal':0}
+reward_dict={'hell':-1,'apple':10000,'normal':0}
 #terminal设置
 terminal_place={'hell':True,'apple':True,'normal':False}
+def set_hell():
+    #hell=np.array([[2,1],[3,1],[4,2],[2,3],[2,4],[2,5],[3,4],[2,6]])#x为从左到右第几个，y为从上到下第几个
+    hell=np.array([[1,2]])
+    path=list()
+    path.append((1,1))
+    x=2
+    y=1
+    status=0#0:right  1:down   2:left  3:up
+    apple1=(0,0)
+    while( (x,y) not in path):
+        path.append((x,y))
+        apple1=(x,y)
+        if status==0:
+            x+=1
+            if x>length or (x+1,y) in path:
+                x-=1
+                y+=1
+                status=1
+        elif status==1:
+            y+=1
+            if y>width or (x,y+1) in path:
+                y-=1
+                x-=1
+                status=2
+        elif status==2:
+            x-=1
+            if x<=0 or (x-1,y) in path:
+                x+=1
+                y-=1
+                status=3
+        elif status==3:
+            y-=1
+            if y<=0 or (x,y-1) in path:
+                y+=1
+                x+=1
+                status=0
+    #print(path)
+    for x in range(1,length):
+        for y in range(1,width):
+            if (x,y) not in path and (x,y) != (1,2):
+                site=np.array([x,y])
+                hell=np.row_stack((hell,[site]))
+    #print(hell)
+    apple=np.array([[apple1[0],apple1[1]]])
+    return hell,apple
+#环境设置参数
+hell,apple=set_hell()
+#hell=np.array([[2,1],[3,1],[4,2],[2,3],[2,4],[2,5],[3,4],[2,6]])
+#apple=np.array([[int(length/2),int(width/2)+1]])
+#apple=np.array([[0,0]])
+        
+
+
+
 class ActionError(ValueError):
     def __init__(self,message):
         ValueError.__init__(self)
@@ -66,7 +117,8 @@ class env_maz(tk.Tk):
         self.canvas.pack()
     def reset(self):
         self.update()
-        time.sleep(terminal_interval/1000)
+        if terminal_interval>0:
+            time.sleep(terminal_interval/1000)
         self.canvas.delete(self.searcher)
         x1,y1,x2,y2=0,0,pixel,pixel
         _b=searcher_beauty_bias
@@ -109,7 +161,8 @@ class env_maz(tk.Tk):
         return done
 
     def do_move(self,s0,action):#叫状态转移更好
-        time.sleep(time_interval/1000)
+        if time_interval>0:
+            time.sleep(time_interval/1000)
         s0=list(s0)
         deltax=0
         deltay=0
@@ -158,8 +211,8 @@ if __name__=='__main__':
         done=False
         s=s0
         while True:
-            action=a.actions[random.randint(0,3)]
-            #action='down'
+            action=a.actions[0]
+            action='down'
             if(a.is_move_legal(action)):
                 
                 s1,reward=a.do_move(s,action)

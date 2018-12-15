@@ -1,4 +1,5 @@
 #epsilon-greedy and value iteration 
+#every-visit MC
 import RL_struct
 import Table
 class MenteCarlo(RL_struct.RL_struct):
@@ -32,7 +33,7 @@ class MenteCarlo(RL_struct.RL_struct):
             self.Q_table.show_data()
 
 if __name__=='__main__':
-    a=MenteCarlo(train_times=1000)
+    a=MenteCarlo(train_times=300,epsilon_greedy=0.7)
     
     a.training()
     #time.sleep(5)

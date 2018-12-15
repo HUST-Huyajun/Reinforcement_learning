@@ -39,7 +39,7 @@ class Q_learning(RL_struct.RL_struct):
         #self.Env.mainloop()
 
 if __name__=='__main__':
-    a=Q_learning(train_times=1000,learning_rate=0.1)
+    a=Q_learning(train_times=10000,learning_rate=0.1,epsilon_greedy=0.01)
     
     a.training()
     #time.sleep(5)

@@ -39,7 +39,7 @@ class Sarsa(RL_struct.RL_struct):
         
 
 if __name__=='__main__':
-    a=Sarsa(train_times=1000,learning_rate=0.1)
+    a=Sarsa(train_times=100,learning_rate=0.1)
     
     a.training()
     #time.sleep(5)
