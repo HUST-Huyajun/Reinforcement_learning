@@ -1,8 +1,8 @@
 #epsilon-greedy and value iteration 
 #every-visit MC
-import RL_struct
+import RL_struct as RLst
 import Table
-class MenteCarlo(RL_struct.RL_struct):
+class MenteCarlo(RLst.RL_struct_base):
     def __init__(self, epsilon_greedy = 0.9, reward_delay = 0.9, learning_rate = 0.5, train_times = 10):
         super().__init__(epsilon_greedy, reward_delay, learning_rate, train_times)
         self.sampling_times=Table.State_Action_table(self.actions)

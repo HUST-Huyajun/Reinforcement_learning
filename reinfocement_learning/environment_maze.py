@@ -9,13 +9,13 @@ else:
 
 #迷宫大小参数
 pixel=30
-length=7
-width=7
+length=4
+width=4
 #美观参数
 searcher_beauty_bias=5
 #动作延时参数
-time_interval=0#ms,每移动一次延时
-terminal_interval=0#ms，每次抽样延时
+time_interval=300#ms,每移动一次延时
+terminal_interval=1000#ms，每次抽样延时
 #奖赏设置
 reward_dict={'hell':-1,'apple':10000,'normal':0}
 #terminal设置
@@ -64,6 +64,7 @@ def set_hell():
                 hell=np.row_stack((hell,[site]))
     #print(hell)
     apple=np.array([[apple1[0],apple1[1]]])
+    #apple=np.array([])
     return hell,apple
 #环境设置参数
 hell,apple=set_hell()
@@ -202,6 +203,17 @@ class env_maz(tk.Tk):
             return tuple(s1),reward#在普通板块
         else:
             raise ActionError('This action will move out of the boundary!')
+
+    def do_back(self,s0,action0,s1):#这里为了方便还是用了对称信息，其实只要是模拟环境逻辑上完全可以做到model-free情况下的回滚
+        if action0=='left':
+            action0_oppose='right'
+        elif action0=='right':
+            action0_oppose='left'
+        elif action0=='up':
+            action0_oppose='down'
+        elif action0=='down':
+            action0_oppose='up'
+        self.do_move(s1,action0_oppose)
 
 
 if __name__=='__main__':
