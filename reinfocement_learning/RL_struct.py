@@ -1,7 +1,7 @@
 
 import Table 
 import numpy as np
-import environment_maze
+import Environment_Maze
 import time
 class RL_base():
     def __init__(self,epsilon_greedy=0.9,reward_delay=0.9,learning_rate=0.5,train_times=10,tabu_step=0):
@@ -9,7 +9,7 @@ class RL_base():
         self.gamma=reward_delay
         self.alpha=learning_rate#只对Sarsa 和Q-learning有意义
         self.n=train_times
-        self.Env=environment_maze.env_maz()
+        self.Env=Environment_Maze.env_maz()
         self.actions=self.Env.actions
         self.Q_table=Table.State_Action_table(self.actions)
 
@@ -24,7 +24,6 @@ class RL_base():
         for action in self.actions:
             if self.Env.is_move_legal(action):#判断合法性(是否越界)
                 legal_actions.append(action)
-        print(s0,legal_actions)
         if len(legal_actions)==0:
             return 'None'
         else:

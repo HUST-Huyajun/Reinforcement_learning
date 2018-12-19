@@ -9,13 +9,13 @@ else:
 
 #迷宫大小参数
 pixel=30
-length=4
-width=4
+length=9
+width=9
 #美观参数
 searcher_beauty_bias=5
 #动作延时参数
-time_interval=30#ms,每移动一次延时
-terminal_interval=1000#ms，每次抽样延时
+time_interval=0#ms,每移动一次延时
+terminal_interval=0#ms，每次抽样延时
 #奖赏设置
 reward_dict={'hell':-1,'apple':100,'normal':0}
 #terminal设置

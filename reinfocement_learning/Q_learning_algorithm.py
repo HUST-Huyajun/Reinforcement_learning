@@ -52,11 +52,10 @@ class Q_learning(RLst.RL_base):
         #self.Env.mainloop()
 
 if __name__=='__main__':
-    a=Q_learning(train_times=100,learning_rate=0.1,epsilon_greedy=0.8,tabu_step=10)
+    a=Q_learning(train_times=1000,learning_rate=0.1,epsilon_greedy=0.95,tabu_step=10)
     
     a.training()
     #time.sleep(5)
-    a.run()
     a.Env.mainloop()
 
            
