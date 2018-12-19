@@ -38,7 +38,7 @@ class State_Action_table:
         bestaction=np.random.choice(a)
         return bestaction
 
-    def choose_only_one_best_action(self,s0):#正式运行时使用
+    def choose_only_one_best_action(self,s0):#训练后run时使用
         self.check_state(s0)
         action_group=self.__table.loc[[s0],:]#tuple不加[]会出现错误，解释器无法识别是元组是统一一个参数还是多个参数
         best_action_group=action_group.loc[:,action_group.iloc[0]==np.max(action_group.values)].columns#

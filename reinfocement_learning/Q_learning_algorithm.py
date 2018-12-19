@@ -1,5 +1,5 @@
 import RL_struct as RLst
-class Q_learning(RLst.RL_tabu):
+class Q_learning(RLst.RL_base):
     def __init__(self,epsilon_greedy=0.9,reward_delay=0.9,learning_rate=0.5,train_times=10,tabu_step=0):
         super().__init__(epsilon_greedy, reward_delay, learning_rate, train_times,tabu_step)
 
@@ -16,11 +16,10 @@ class Q_learning(RLst.RL_tabu):
 
     def training(self):
         for i in range(self.n):#n次完整训练
-            s0=(-1,-1)
-            s1=self.Env.reset()
+            print('iteration=',i)
 
-            self.tabu_table.clear()#采样结束，清空禁忌信息
-            self.time=1
+            s0=(-1,-1)
+            s1=self.reset()
 
             action0='None'
             action1=self.epsilon_choose_action(s1)
@@ -39,20 +38,21 @@ class Q_learning(RLst.RL_tabu):
                 if self.Env.Whether_to_end(s1):
                     break
 
-            print('iteration=',i)
-            #self.Q_table.show_data()
+            self.Q_table.show_data()
             #self.tabu_table.show_data()
             #self.spredict_table.show_data()
-            #place=self.run()
+            place=self.run()
             #print('this move to '+place,'\n')
-            #if place=='apple':
-            #    break
-            # else:
-            #     print('this move to '+self.run())
+            if place=='apple':
+                break
+            else:
+                print('this move to '+place)
+
+            print('----------------')
         #self.Env.mainloop()
 
 if __name__=='__main__':
-    a=Q_learning(train_times=100,learning_rate=0.1,epsilon_greedy=0,tabu_step=10)
+    a=Q_learning(train_times=100,learning_rate=0.1,epsilon_greedy=0.8,tabu_step=10)
     
     a.training()
     #time.sleep(5)

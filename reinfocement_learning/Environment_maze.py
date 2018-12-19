@@ -14,10 +14,10 @@ width=4
 #美观参数
 searcher_beauty_bias=5
 #动作延时参数
-time_interval=300#ms,每移动一次延时
+time_interval=30#ms,每移动一次延时
 terminal_interval=1000#ms，每次抽样延时
 #奖赏设置
-reward_dict={'hell':-1,'apple':10000,'normal':0}
+reward_dict={'hell':-1,'apple':100,'normal':0}
 #terminal设置
 terminal_place={'hell':True,'apple':True,'normal':False}
 def set_hell():
@@ -203,7 +203,6 @@ class env_maz(tk.Tk):
             return tuple(s1),reward#在普通板块
         else:
             raise ActionError('This action will move out of the boundary!')
-
     def do_back(self,s0,action0,s1):#这里为了方便还是用了对称信息，其实只要是模拟环境逻辑上完全可以做到model-free情况下的回滚
         if action0=='left':
             action0_oppose='right'
