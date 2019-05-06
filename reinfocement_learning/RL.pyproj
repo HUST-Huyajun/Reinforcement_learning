@@ -5,7 +5,7 @@
     <ProjectGuid>cc7db4c7-873a-49a9-855f-debde9986346</ProjectGuid>
     <ProjectHome>
     </ProjectHome>
-    <StartupFile>Q_learning_algorithm.py</StartupFile>
+    <StartupFile>Environment_Maze.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
@@ -23,7 +23,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="environment_maze.py">
+    <Compile Include="Environment_Maze.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MenteCarlo_algorithm.py">

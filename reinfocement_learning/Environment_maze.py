@@ -6,11 +6,10 @@ if sys.version_info.major==2:
     import Tkinter as tk
 else:
     import tkinter as tk
-
 #迷宫大小参数
 pixel=30
-length=9
-width=9
+#length=9
+#width=9
 #美观参数
 searcher_beauty_bias=5
 #动作延时参数
@@ -20,60 +19,83 @@ terminal_interval=0#ms，每次抽样延时
 reward_dict={'hell':-1,'apple':100,'normal':0}
 #terminal设置
 terminal_place={'hell':True,'apple':True,'normal':False}
-def set_hell():
-    #hell=np.array([[2,1],[3,1],[4,2],[2,3],[2,4],[2,5],[3,4],[2,6]])#x为从左到右第几个，y为从上到下第几个
-    hell=np.array([[1,2]])
-    path=list()
-    path.append((1,1))
-    x=2
-    y=1
-    status=0#0:right  1:down   2:left  3:up
-    apple1=(0,0)
-    while( (x,y) not in path):
-        path.append((x,y))
-        apple1=(x,y)
-        if status==0:
-            x+=1
-            if x>length or (x+1,y) in path:
-                x-=1
-                y+=1
-                status=1
-        elif status==1:
-            y+=1
-            if y>width or (x,y+1) in path:
-                y-=1
-                x-=1
-                status=2
-        elif status==2:
-            x-=1
-            if x<=0 or (x-1,y) in path:
+def set_hell(type):
+    if type=='hard':
+        #hell=np.array([[2,1],[3,1],[4,2],[2,3],[2,4],[2,5],[3,4],[2,6]])#x为从左到右第几个，y为从上到下第几个
+        hell=np.array([[1,2]])
+        path=list()
+        path.append((1,1))
+        x=2
+        y=1
+        status=0#0:right  1:down   2:left  3:up
+        apple1=(0,0)
+        while( (x,y) not in path):
+            path.append((x,y))
+            apple1=(x,y)
+            if status==0:
                 x+=1
-                y-=1
-                status=3
-        elif status==3:
-            y-=1
-            if y<=0 or (x,y-1) in path:
+                if x>length or (x+1,y) in path:
+                    x-=1
+                    y+=1
+                    status=1
+            elif status==1:
                 y+=1
-                x+=1
-                status=0
-    #print(path)
-    for x in range(1,length):
-        for y in range(1,width):
-            if (x,y) not in path and (x,y) != (1,2):
-                site=np.array([x,y])
-                hell=np.row_stack((hell,[site]))
-    #print(hell)
-    apple=np.array([[apple1[0],apple1[1]]])
-    #apple=np.array([])
+                if y>width or (x,y+1) in path:
+                    y-=1
+                    x-=1
+                    status=2
+            elif status==2:
+                x-=1
+                if x<=0 or (x-1,y) in path:
+                    x+=1
+                    y-=1
+                    status=3
+            elif status==3:
+                y-=1
+                if y<=0 or (x,y-1) in path:
+                    y+=1
+                    x+=1
+                    status=0
+        #print(path)
+        for x in range(1,length):
+            for y in range(1,width):
+                if (x,y) not in path and (x,y) != (1,2):
+                    site=np.array([x,y])
+                    hell=np.row_stack((hell,[site]))
+        #print(hell)
+        apple=np.array([[apple1[0],apple1[1]]])
+        #apple=np.array([])
+    elif type=='random':
+        import random
+        hell=np.array([[length,width]])
+        for i in range(length):
+            x= random.randint(1,length)
+            y= random.randint(1,width)
+            if x==1 and y==1:
+                i=i-1
+                continue
+            site=np.array([x,y])
+            print (hell)
+            hell=np.row_stack((hell,[site]))
+        while True:
+            x= random.randint(1,length)
+            y= random.randint(1,width)
+            apple=np.array([[x,y]])
+            if x==1 and y==1:
+                continue
+            elif [x,y] not in hell:
+                break
+        #hell=np.array([[1,2],[3,2]])#x为从左到右第几个，y为从上到下第几个
+        #apple=np.array([[2,3]])
+    print (hell,apple)
     return hell,apple
 #环境设置参数
-hell,apple=set_hell()
+length=5
+width=4
+hell,apple=set_hell(type='random')
 #hell=np.array([[2,1],[3,1],[4,2],[2,3],[2,4],[2,5],[3,4],[2,6]])
 #apple=np.array([[int(length/2),int(width/2)+1]])
 #apple=np.array([[0,0]])
-        
-
-
 
 class ActionError(ValueError):
     def __init__(self,message):
